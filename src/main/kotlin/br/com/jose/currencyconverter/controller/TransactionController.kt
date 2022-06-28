@@ -14,7 +14,7 @@ class TransactionController(
     private val transactionService: TransactionService,
     private val userService: UserService
 ) {
-    @GetMapping
+    @PostMapping
     fun getTransaction(
         @RequestParam("origin") originCurrency: String,
         @RequestParam("target") targetCurrency: String,
