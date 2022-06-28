@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="br.com.jose.currencyconverter.mapper.CurrencyMapper">
+
+    <resultMap id="resultCurrency" type="br.com.jose.currencyconverter.model.Currency">
+        <result column="id" property="id"/>
+        <result column="description" property="description"/>
+        <result column="short_name" property="shortName"/>
+    </resultMap>
+
+    <sql id="currencyColumns">
+        id,
+        description,
+        short_name
+    </sql>
+
+    <select id="getCurrencyByShortName" resultMap="resultCurrency">
+        select
+            <include refid="currencyColumns"/>
+        from conversions.currency
+        where short_name = #{shortName}
+    </select>
+
+    <select id="getCurrencyById" resultMap="resultCurrency">
+        select
+        <include refid="currencyColumns"/>
+        from conversions.currency
+        where id = #{id}
+    </select>
+
+    <select id="getAllCurrencies" resultMap="resultCurrency">
+        select
+            <include refid="currencyColumns"/>
+        from conversions.currency
+    </select>
+
+    <insert id="insertCurrency" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into conversions.currency
+            (description, short_name)
+        values
+            (#{currency.description}, #{currency.shortName})
+    </insert>
+
+</mapper>

@@ -1,0 +1,7 @@
+FROM postgres:latest
+
+ENV POSTGRES_USER jose
+ENV POSTGRES_PASSWORD p455w0rd
+ENV POSTGRES_DB converter
+
+COPY init.sql /docker-entrypoint-initdb.d/

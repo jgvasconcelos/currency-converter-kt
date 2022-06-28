@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="br.com.jose.currencyconverter.mapper.UserMapper">
+
+    <resultMap id="resultUser" type="br.com.jose.currencyconverter.model.User">
+        <result column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="register_date" property="registerDate"/>
+        <result column="active" property="active"/>
+    </resultMap>
+
+    <sql id="userColumns">
+        id,
+        username,
+        password,
+        register_date,
+        active
+    </sql>
+
+    <select id="getUserById" resultMap="resultUser">
+        select
+            <include refid="userColumns"/>
+        from users.user_info
+        where id = #{userId}
+    </select>
+
+    <insert id="insertUser" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into users.user_info
+            (username, password, register_date, active)
+        values
+            (#{user.username}, #{user.password}, #{user.registerDate}, true)
+    </insert>
+
+    <select id="getUserByUsername" resultMap="resultUser">
+        select
+        <include refid="userColumns"/>
+        from users.user_info
+        where username = #{username}
+    </select>
+
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="br.com.jose.currencyconverter.mapper.TransactionMapper">
+
+    <resultMap id="resultTransaction" type="br.com.jose.currencyconverter.model.Transaction">
+        <result column="id" property="id"/>
+        <result column="original_value" property="originalValue"/>
+        <result column="conversion_rate" property="conversionRate"/>
+        <result column="transaction_datetime" property="transactionDateTime"/>
+        <association property="originalCurrency" column="original_currency"
+                     select="br.com.jose.currencyconverter.mapper.CurrencyMapper.getCurrencyById"/>
+        <association property="targetCurrency" column="target_currency"
+                     select="br.com.jose.currencyconverter.mapper.CurrencyMapper.getCurrencyById"/>
+        <association property="user" column="user_id"
+                     select="br.com.jose.currencyconverter.mapper.UserMapper.getUserById"/>
+    </resultMap>
+
+    <sql id="columnsTransaction">
+        id,
+        original_currency,
+        original_value,
+        target_currency,
+        conversion_rate,
+        transaction_datetime,
+        user_id
+    </sql>
+
+    <select id="getTransactionsByUserId" resultMap="resultTransaction">
+        select
+            <include refid="columnsTransaction"/>
+        from conversions.transaction
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insertTransaction" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into conversions.transaction
+            (original_currency, original_value, target_currency, conversion_rate, transaction_datetime, user_id)
+        values
+            (#{transaction.originalCurrency.id}, #{transaction.originalValue}, #{transaction.targetCurrency.id},
+             #{transaction.conversionRate}, #{transaction.transactionDateTime}, #{transaction.user.id})
+    </insert>
+
+</mapper>

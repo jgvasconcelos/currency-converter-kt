@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  postgres:
+    ports:
+      - 5432:5432
+    build:
+      context: .
+      dockerfile: Dockerfile-postgres
+    image: postgres-conversion
+    container_name: postgres-conversion
+    restart: on-failure
+
+  springboot:
+    ports:
+      - 8080:8080
+    build:
+      context: .
+      dockerfile: Dockerfile-springboot
+    image: currency-converter
+    container_name: currency-converter
+    depends_on:
+      - postgres
+    restart: on-failure

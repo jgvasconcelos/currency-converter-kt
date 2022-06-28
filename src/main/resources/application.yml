@@ -1,0 +1,18 @@
+spring:
+  profiles:
+    active: development
+
+mybatis:
+  mapper-locations: classpath*:**/mappers/*Mapper.xml
+
+conversion:
+  base-url: https://api.apilayer.com/exchangerates_data/latest?
+  api-key: JZcedy5tPnpUzf5I12LiEMkpNT64t83q
+
+---
+spring:
+  profiles: development
+  datasource:
+    url: jdbc:postgresql://localhost:5432/converter
+    username: jose
+    password: p455w0rd
