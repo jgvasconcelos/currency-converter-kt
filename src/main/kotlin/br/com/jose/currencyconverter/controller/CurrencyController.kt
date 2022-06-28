@@ -20,8 +20,8 @@ class CurrencyController(
 
     @GetMapping("/{shortName}")
     fun getCurrencyByShortName(@PathVariable("shortName") shortName: String): ResponseEntity<Currency> {
-        val currency = currencyService.getCurrencyByShortName(shortName)?.let {
-            ResponseEntity.ok().body(it)
+        currencyService.getCurrencyByShortName(shortName)?.let {
+            return ResponseEntity.ok().body(it)
         }
         throw ResourceNotFoundException("Currency not found.")
     }
