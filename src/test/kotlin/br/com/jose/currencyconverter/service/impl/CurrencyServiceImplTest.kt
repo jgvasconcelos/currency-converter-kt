@@ -1,4 +1,4 @@
-package br.com.jose.currencyconverter
+package br.com.jose.currencyconverter.service.impl
 
 import br.com.jose.currencyconverter.exception.ResourceAlreadyExistsException
 import br.com.jose.currencyconverter.mapper.CurrencyMapper
@@ -27,17 +27,17 @@ class CurrencyServiceImplTest {
 
     }
 
-    //dúvida nesse
     @Test
     fun `if not return a currency with abbreviated name`() {
-        //val brCoin = Currency(1,"Real Brasileiro", "BRL")
+        val shortName = "USD"
 
-        every { mockedCurrencyMapper.getCurrencyByShortName("USD") } returns null
+        every { mockedCurrencyMapper.getCurrencyByShortName(shortName) } returns null
 
-        val result = currencyServiceImpl.getCurrencyByShortName("USD")
+        val result = currencyServiceImpl.getCurrencyByShortName(shortName)
 
         assertEquals(null, result)
     }
+
 
     @Test
     fun `if all coins are returned`() {

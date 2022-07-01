@@ -13,6 +13,7 @@ import java.util.*
 class UserServiceImpl(
     private val userMapper: UserMapper
 ) : UserService {
+
     override fun getUserById(userId: Long): User? {
         return userMapper.getUserById(userId)
     }
