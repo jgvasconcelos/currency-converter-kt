@@ -42,7 +42,7 @@ class TransactionServiceImpl(
             )
         val targetCurrency =
             currencyService.getCurrencyByShortName(targetCurrencyShortName) ?: throw TransactionBadRequestException(
-                "The origin currency $targetCurrencyShortName is not registered."
+                "The destination currency $targetCurrencyShortName is not registered."
             )
         val user = userService.getUserById(userId)
             ?: throw TransactionBadRequestException("The user with the ID $userId is not registered.")
