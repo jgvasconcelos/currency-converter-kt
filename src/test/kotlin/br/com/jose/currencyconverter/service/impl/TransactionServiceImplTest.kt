@@ -1,5 +1,6 @@
 package br.com.jose.currencyconverter.service.impl
 
+import br.com.jose.currencyconverter.dto.ConversionRatesDTO
 import br.com.jose.currencyconverter.exception.TransactionBadRequestException
 import br.com.jose.currencyconverter.mapper.CurrencyMapper
 import br.com.jose.currencyconverter.mapper.TransactionMapper
@@ -11,6 +12,8 @@ import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.http.*
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -24,15 +27,17 @@ class TransactionServiceImplTest {
 
     private val userServiceImpl: UserServiceImpl = UserServiceImpl(mockedUserMapper)
     private val currencyServiceImpl: CurrencyServiceImpl = CurrencyServiceImpl(mockedCurrencyMapper)
-    private val restTemplate: RestTemplate = RestTemplate()
+    private val mockedRestTemplate: RestTemplate = mockk()
+    private val apiBaseUrl = "apiBaseUrl"
+    private val apiKey = "apiKey"
 
     private val transactionServiceImpl: TransactionServiceImpl = TransactionServiceImpl(
         mockedTransactionMapper,
         userServiceImpl,
         currencyServiceImpl,
-        restTemplate,
-        "apiBaseUrl",
-        "apiKey"
+        mockedRestTemplate,
+        apiBaseUrl,
+        apiKey
     )
     private val transactionServiceImplSpy: TransactionServiceImpl = spyk(transactionServiceImpl)
 
@@ -234,4 +239,101 @@ class TransactionServiceImplTest {
 
     }
 
+    @Test
+    fun `If returns a conversion rate`() {
+        val destinationCurrency = Currency(1, "Dolar Americano", "USD")
+        val originCurrency = Currency(2, "Real Brasileiro", "BRL")
+
+        val conversionRate = BigDecimal(4.9)
+
+        val url = "${apiBaseUrl}symbols=${destinationCurrency.shortName}&base=${originCurrency.shortName}"
+
+        val headers = HttpHeaders()
+        headers.set("apikey", apiKey)
+
+        val request = HttpEntity<Unit>(headers)
+
+        val conversionRatesDTO = ConversionRatesDTO (
+            originCurrency.shortName,
+            LocalDate.now(),
+            mapOf(destinationCurrency.shortName to conversionRate),
+            true
+        )
+
+        val responseReturn = ResponseEntity.ok().body(conversionRatesDTO)
+
+        every {
+            mockedRestTemplate.exchange(url, HttpMethod.GET, request, ConversionRatesDTO::class.java)
+        } returns responseReturn
+
+        val result = transactionServiceImpl.getConversionRate(originCurrency, destinationCurrency)
+
+        assertEquals(conversionRate, result)
+    }
+
+    @Test
+    fun `returns an exception when the short name is not registered with a conversion rate`(){
+        val destinationCurrency = Currency(1, "Dolar Americano", "USD")
+        val originCurrency = Currency(2, "Real Brasileiro", "BRL")
+
+        val conversionRate = BigDecimal(4.9)
+
+        val url = "${apiBaseUrl}symbols=${destinationCurrency.shortName}&base=${originCurrency.shortName}"
+
+        val headers = HttpHeaders()
+        headers.set("apikey", apiKey)
+
+        val request = HttpEntity<Unit>(headers)
+
+        val conversionRatesDTO = ConversionRatesDTO (
+            originCurrency.shortName,
+            LocalDate.now(),
+            mapOf("EUR" to conversionRate),
+            true
+        )
+
+        val responseReturn = ResponseEntity.ok().body(conversionRatesDTO)
+
+        every {
+            mockedRestTemplate.exchange(url, HttpMethod.GET, request, ConversionRatesDTO::class.java)
+        } returns responseReturn
+
+        val resultAssert = assertThrows<TransactionBadRequestException> {
+            transactionServiceImpl.getConversionRate(originCurrency, destinationCurrency)
+        }
+
+        assertEquals(
+            "There is no available conversion rate between" +
+                    " ${originCurrency.shortName} and ${destinationCurrency.shortName}.",
+            resultAssert.message
+        )
+
+    }
+
+    @Test
+    fun `Throws an exception when unable to communicate with external API`() {
+        val destinationCurrency = Currency(1, "Dolar Americano", "USD")
+        val originCurrency = Currency(2, "Real Brasileiro", "BRL")
+
+        val url = "${apiBaseUrl}symbols=${destinationCurrency.shortName}&base=${originCurrency.shortName}"
+
+        val headers = HttpHeaders()
+        headers.set("apikey", apiKey)
+
+        val request = HttpEntity<Unit>(headers)
+
+        every {
+            mockedRestTemplate.exchange(url, HttpMethod.GET, request, ConversionRatesDTO::class.java)
+        } throws HttpClientErrorException(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Communication with external API failed"
+        )
+
+        val resultAssert = assertThrows<TransactionBadRequestException> {
+            transactionServiceImpl.getConversionRate(originCurrency, destinationCurrency)
+        }
+
+        assertEquals("500 Communication with external API failed", resultAssert.message)
+    }
+    
 }

@@ -66,11 +66,13 @@ class TransactionServiceImpl(
     override fun getConversionRate(originalCurrency: Currency, targetCurrency: Currency): BigDecimal {
         try {
             val url = "${apiBaseUrl}symbols=${targetCurrency.shortName}&base=${originalCurrency.shortName}"
+            //symbols= | base= <-> Query Params
 
             val headers = HttpHeaders()
             headers.set("apikey", apiKey)
 
             val request = HttpEntity<Unit>(headers)
+            //request { url, headers, method, body }
 
             val response = restTemplate.exchange(
                 url,
@@ -79,7 +81,7 @@ class TransactionServiceImpl(
                 ConversionRatesDTO::class.java
             )
 
-            return response.body?.rates?.get(targetCurrency.shortName) ?: throw TransactionBadRequestException(
+            return response.body?.rates!![targetCurrency.shortName] ?: throw TransactionBadRequestException(
                 "There is no available conversion rate between " + originalCurrency.shortName
                         + " and " + targetCurrency.shortName + "."
             )
