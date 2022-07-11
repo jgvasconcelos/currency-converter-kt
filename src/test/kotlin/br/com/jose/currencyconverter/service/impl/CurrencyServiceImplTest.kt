@@ -28,7 +28,7 @@ class CurrencyServiceImplTest {
     }
 
     @Test
-    fun `if not return a currency with abbreviated name`() {
+    fun `Returns null, when it does not find a currency by its short name`() {
         val shortName = "USD"
 
         every { mockedCurrencyMapper.getCurrencyByShortName(shortName) } returns null
@@ -69,7 +69,7 @@ class CurrencyServiceImplTest {
     }
 
     @Test
-    fun `If the short name has already been registered`() {
+    fun `Throws exception when short name is already registered`() {
         val brCoin = Currency(1, "Real Brasileiro", "BRL")
 
         every { mockedCurrencyMapper.getCurrencyByShortName(brCoin.shortName) } returns brCoin

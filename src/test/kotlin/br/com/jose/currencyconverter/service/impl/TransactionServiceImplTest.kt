@@ -178,7 +178,7 @@ class TransactionServiceImplTest {
     }
 
     @Test
-    fun `Returns exception when it doesn't find the shortName of a destination currency`() {
+    fun `Throws an exception when it doesn't find the shortName of a destination currency`() {
         val admin = User(99, "Zevas", "c6bank", LocalDate.now(), true)
 
         val originValue = BigDecimal(100.0)
@@ -207,7 +207,7 @@ class TransactionServiceImplTest {
     }
 
     @Test
-    fun `Returns exception when not finding UserId of a User`() {
+    fun `Throws an exception when not finding UserId of a User`() {
         val admin = User(99, "Zevas", "c6bank", LocalDate.now(), true)
 
         val originValue = BigDecimal(100.0)
@@ -260,11 +260,11 @@ class TransactionServiceImplTest {
             true
         )
 
-        val responseReturn = ResponseEntity.ok().body(conversionRatesDTO)
+        val expectedResponse = ResponseEntity.ok().body(conversionRatesDTO)
 
         every {
             mockedRestTemplate.exchange(url, HttpMethod.GET, request, ConversionRatesDTO::class.java)
-        } returns responseReturn
+        } returns expectedResponse
 
         val result = transactionServiceImpl.getConversionRate(originCurrency, destinationCurrency)
 
@@ -272,7 +272,7 @@ class TransactionServiceImplTest {
     }
 
     @Test
-    fun `returns an exception when the short name is not registered with a conversion rate`(){
+    fun `Throws an exception when the short name is not registered with a conversion rate`(){
         val destinationCurrency = Currency(1, "Dolar Americano", "USD")
         val originCurrency = Currency(2, "Real Brasileiro", "BRL")
 
@@ -292,11 +292,11 @@ class TransactionServiceImplTest {
             true
         )
 
-        val responseReturn = ResponseEntity.ok().body(conversionRatesDTO)
+        val expectedResponse = ResponseEntity.ok().body(conversionRatesDTO)
 
         every {
             mockedRestTemplate.exchange(url, HttpMethod.GET, request, ConversionRatesDTO::class.java)
-        } returns responseReturn
+        } returns expectedResponse
 
         val resultAssert = assertThrows<TransactionBadRequestException> {
             transactionServiceImpl.getConversionRate(originCurrency, destinationCurrency)

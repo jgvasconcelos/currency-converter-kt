@@ -24,13 +24,13 @@ class UserControllerTest {
     fun`if the controller calls the service and returns a user by id`() {
         val admin = User(1, "Pedrin", "c6bank", LocalDate.now(), true)
 
-        val returnedResponse: ResponseEntity<User> = ResponseEntity(admin, HttpStatus.OK)
+        val expectedResponse: ResponseEntity<User> = ResponseEntity(admin, HttpStatus.OK)
 
         every { mockedUserService.getUserById(admin.id) } returns admin
 
         val result = userController.getUserById(admin.id)
 
-        assertEquals(returnedResponse, result)
+        assertEquals(expectedResponse, result)
 
     }
 

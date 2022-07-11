@@ -68,7 +68,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    fun `Returns exception when the user already exists`() {
+    fun `Throws an exception when the user already exists`() {
         val admin = User(1, "JoseGil", "Zevas", LocalDate.now(), true)
 
         every { mockedUserMapper.insertUser(admin) } just runs
