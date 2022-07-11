@@ -74,7 +74,7 @@ class CurrencyControllerTest {
 
         val result = currencyController.postCurrency(brCoin)
 
-        //dúvida, aqui não deveria ser feito o verify?
+        //dúvida, aqui não deveria ser feito o verify (exactly = 1)?
         assertEquals(returnedResponse, result)
 
     }
