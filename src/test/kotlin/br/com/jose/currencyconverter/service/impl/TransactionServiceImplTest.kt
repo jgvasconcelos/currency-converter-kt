@@ -335,5 +335,5 @@ class TransactionServiceImplTest {
 
         assertEquals("500 Communication with external API failed", resultAssert.message)
     }
-    
+
 }
