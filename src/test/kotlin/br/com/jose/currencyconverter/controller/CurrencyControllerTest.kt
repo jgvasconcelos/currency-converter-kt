@@ -3,10 +3,7 @@ package br.com.jose.currencyconverter.controller
 import br.com.jose.currencyconverter.exception.ResourceNotFoundException
 import br.com.jose.currencyconverter.model.Currency
 import br.com.jose.currencyconverter.service.impl.CurrencyServiceImpl
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.runs
+import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -74,7 +71,7 @@ class CurrencyControllerTest {
 
         val result = currencyController.postCurrency(brCoin)
 
-        //dúvida, aqui não deveria ser feito o verify (exactly = 1)?
+        verify (exactly = 1) { mockedCurrencyServiceImpl.insertCurrency(brCoin) }
         assertEquals(returnedResponse, result)
 
     }

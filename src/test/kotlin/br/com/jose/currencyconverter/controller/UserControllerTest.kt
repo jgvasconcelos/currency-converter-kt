@@ -3,10 +3,7 @@ package br.com.jose.currencyconverter.controller
 import br.com.jose.currencyconverter.exception.ResourceNotFoundException
 import br.com.jose.currencyconverter.model.User
 import br.com.jose.currencyconverter.service.UserService
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.runs
+import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -83,7 +80,7 @@ class UserControllerTest {
 
         val result = userController.postUser(admin)
 
-        //dúvida, aqui não deveria ser feito o verify (exactly = 1)?
+        verify (exactly = 1) { mockedUserService.insertUser(admin) }
         assertEquals(returnedResponse, result)
 
     }

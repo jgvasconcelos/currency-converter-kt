@@ -6,10 +6,7 @@ import br.com.jose.currencyconverter.model.Transaction
 import br.com.jose.currencyconverter.model.User
 import br.com.jose.currencyconverter.service.TransactionService
 import br.com.jose.currencyconverter.service.UserService
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.runs
+import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -31,9 +28,6 @@ class TransactionControllerTest {
 
     @Test
     fun`If the controller calls the service, it creates, saves and returns the transaction`() {
-        //esta função na TransactionController, está criando e salvando a transação, não seria indicado
-        //dividir esta função em duas para seguir o principio de responsabilidade unica?!
-
         val originCurrency = Currency(1000, "Real Brasileiro", "BRL")
         val targetCurrency = Currency(2001, "Dolar Americano", "USD")
 
@@ -57,7 +51,7 @@ class TransactionControllerTest {
         val expectedResponse: ResponseEntity<Transaction> = ResponseEntity(transaction, HttpStatus.OK)
 
         every {
-            mockedTransactionService.createTransaction(
+            mockedTransactionService.createAndInsertTransaction(
                 originCurrency.shortName,
                 targetCurrency.shortName,
                 originValue,
@@ -65,16 +59,21 @@ class TransactionControllerTest {
             )
         } returns transaction
 
-        every {
-            mockedTransactionService.insertTransaction(transaction)
-        } just runs
-
         val result = transactionController.getTransaction(
             originCurrency.shortName,
             targetCurrency.shortName,
             originValue,
             admin.id
         )
+
+        verify (exactly = 1) {
+            mockedTransactionService.createAndInsertTransaction(
+                originCurrency.shortName,
+                targetCurrency.shortName,
+                originValue,
+                admin.id
+            )
+        }
 
         assertEquals(expectedResponse, result)
     }
@@ -90,7 +89,7 @@ class TransactionControllerTest {
         val originValue = BigDecimal(100.0)
         val conversionRate = BigDecimal(5.0)
 
-        val localDateTime = LocalDateTime.now()
+        val transactionDateTime = LocalDateTime.now()
 
         val transactionConversionToDollar = Transaction(
             1,
@@ -98,7 +97,7 @@ class TransactionControllerTest {
             originValue,
             targetDollarCurrency,
             conversionRate,
-            localDateTime,
+            transactionDateTime,
             admin
         )
 
@@ -108,7 +107,7 @@ class TransactionControllerTest {
             originValue,
             targetEuroCurrency,
             conversionRate,
-            localDateTime,
+            transactionDateTime,
             admin
         )
 
