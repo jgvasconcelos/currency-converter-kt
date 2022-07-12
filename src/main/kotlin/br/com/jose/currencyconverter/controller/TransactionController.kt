@@ -21,11 +21,10 @@ class TransactionController(
         @RequestParam("value") value: BigDecimal,
         @RequestParam("userId") userId: Long
     ): ResponseEntity<Transaction> {
-        val transaction = transactionService.createTransaction(
+        val transaction = transactionService.createAndInsertTransaction(
             originCurrency,
             targetCurrency, value, userId
         )
-        transactionService.insertTransaction(transaction!!)
         return ResponseEntity.ok().body(transaction)
     }
 

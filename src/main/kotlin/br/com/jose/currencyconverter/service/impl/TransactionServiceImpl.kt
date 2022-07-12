@@ -93,4 +93,21 @@ class TransactionServiceImpl(
     override fun getTransactionsByUserId(userId: Long): Collection<Transaction> {
         return transactionMapper.getTransactionsByUserId(userId)
     }
+
+    override fun createAndInsertTransaction(
+        originalCurrencyShortName: String,
+        targetCurrencyShortName: String,
+        originalValue: BigDecimal,
+        userId: Long
+    ): Transaction? {
+        val transaction = createTransaction(
+            originalCurrencyShortName,
+            targetCurrencyShortName,
+            originalValue,
+            userId
+        )
+        insertTransaction(transaction!!)
+        return transaction
+    }
+
 }

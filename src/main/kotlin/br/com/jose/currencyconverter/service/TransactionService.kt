@@ -14,4 +14,10 @@ interface TransactionService {
     fun insertTransaction(transaction: Transaction)
     fun getConversionRate(originalCurrency: Currency, targetCurrency: Currency): BigDecimal
     fun getTransactionsByUserId(userId: Long): Collection<Transaction>
+    fun createAndInsertTransaction(
+        originalCurrencyShortName: String,
+        targetCurrencyShortName: String,
+        originalValue: BigDecimal,
+        userId: Long
+    ): Transaction?
 }
